@@ -1,0 +1,27 @@
+name: Test configuration
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run policy tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Install nginx
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes nginx
+
+      - name: Validate native nginx syntax
+        run: |
+          mkdir -p tests/runtime/{body,proxy,fastcgi,uwsgi,scgi}
+          sudo nginx -t -p "$PWD/" -c tests/nginx.conf

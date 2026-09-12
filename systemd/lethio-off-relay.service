@@ -1,0 +1,53 @@
+[Unit]
+Description=Lethio Open Food Facts relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=lethio-off-relay
+Group=lethio-off-relay
+WorkingDirectory=/opt/lethio-off-relay/current
+ExecStart=/usr/bin/python3 -m lethio_off_relay
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=LETHIO_RELAY_LISTEN_HOST=127.0.0.1
+Environment=LETHIO_RELAY_LISTEN_PORT=8087
+Environment=LETHIO_RELAY_MAXIMUM_CONCURRENCY=4
+Environment=LETHIO_RELAY_OFF_CREDENTIALS_FILE=/etc/lethio-off-relay/off-credentials.json
+
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=10s
+TimeoutStopSec=10s
+UMask=0077
+LimitCORE=0
+
+# Do not give future library output a routine path into journald. systemd still records lifecycle
+# and exit-status metadata for the unit.
+StandardOutput=null
+StandardError=null
+
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ReadOnlyPaths=/opt/lethio-off-relay/current
+ReadOnlyPaths=/etc/lethio-off-relay/off-credentials.json
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target
